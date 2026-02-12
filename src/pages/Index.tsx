@@ -8,6 +8,7 @@ import { MadeWithDyad } from "@/components/made-with-dyad";
 
 const Index = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAccepted, setIsAccepted] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-rose-50 via-white to-pink-50 overflow-hidden p-4">
@@ -48,12 +49,19 @@ const Index = () => {
           className="text-center mb-12"
         >
           <h1 className="text-4xl md:text-5xl font-serif text-rose-600 font-bold">
-            {isOpen ? "Une surprise pour toi..." : "Tu as reçu un message !"}
+            {isAccepted ? "Merveilleux ! ❤️" : isOpen ? "Une surprise pour toi..." : "Tu as reçu un message !"}
           </h1>
         </motion.div>
 
-        <ValentineEnvelope isOpen={isOpen} onOpen={() => setIsOpen(true)}>
-          <ValentineCard />
+        <ValentineEnvelope 
+          isOpen={isOpen} 
+          isAccepted={isAccepted}
+          onOpen={() => setIsOpen(true)}
+        >
+          <ValentineCard 
+            isAccepted={isAccepted} 
+            onAccept={() => setIsAccepted(true)} 
+          />
         </ValentineEnvelope>
       </main>
 
