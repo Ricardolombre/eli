@@ -67,14 +67,15 @@ const Index = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          className="text-center mb-4"
         >
           <h1 className="text-4xl md:text-5xl font-serif text-rose-600 font-bold">
             {isAccepted ? "Merveilleux ! ❤️" : isOpen ? "Une surprise pour toi..." : "Tu as reçu un message !"}
           </h1>
         </motion.div>
 
-        <div className="relative flex flex-col items-center gap-8">
+        {/* Conteneur de l'enveloppe avec une marge supérieure pour laisser la carte monter */}
+        <div className="relative flex flex-col items-center mt-24 sm:mt-32">
           <ValentineEnvelope 
             isOpen={isOpen} 
             isAccepted={isAccepted}
@@ -83,34 +84,36 @@ const Index = () => {
             <ValentineCard isAccepted={isAccepted} />
           </ValentineEnvelope>
 
-          {/* Boutons en dehors de l'enveloppe */}
-          <AnimatePresence>
-            {isOpen && !isAccepted && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-4"
-              >
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={handleAccept}
-                  className="bg-rose-500 text-white px-10 py-4 rounded-full font-bold shadow-xl text-lg z-50"
+          {/* Boutons positionnés sous l'enveloppe */}
+          <div className="h-32 flex items-center justify-center mt-8">
+            <AnimatePresence>
+              {isOpen && !isAccepted && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="flex flex-col sm:flex-row items-center justify-center gap-6"
                 >
-                  Oui ! ❤️
-                </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handleAccept}
+                    className="bg-rose-500 text-white px-10 py-4 rounded-full font-bold shadow-xl text-lg z-50"
+                  >
+                    Oui ! ❤️
+                  </motion.button>
 
-                <motion.button
-                  animate={{ x: noButtonPos.x, y: noButtonPos.y }}
-                  onMouseEnter={handleNoHover}
-                  className="bg-white text-rose-300 px-8 py-3 rounded-full font-semibold border border-rose-100 shadow-sm cursor-default"
-                >
-                  Non 💔
-                </motion.button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  <motion.button
+                    animate={{ x: noButtonPos.x, y: noButtonPos.y }}
+                    onMouseEnter={handleNoHover}
+                    className="bg-white text-rose-300 px-8 py-3 rounded-full font-semibold border border-rose-100 shadow-sm cursor-default"
+                  >
+                    Non 💔
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </main>
 
