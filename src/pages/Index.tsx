@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ValentineEnvelope from '@/components/ValentineEnvelope';
 import ValentineCard from '@/components/ValentineCard';
@@ -11,10 +11,22 @@ const Index = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
   const [noButtonPos, setNoButtonPos] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleNoHover = () => {
-    const newX = (Math.random() - 0.5) * 300;
-    const newY = (Math.random() - 0.5) * 150;
+    // On réduit la portée du mouvement sur mobile pour éviter que le bouton sorte de l'écran
+    const rangeX = isMobile ? 120 : 300;
+    const rangeY = isMobile ? 80 : 150;
+    
+    const newX = (Math.random() - 0.5) * rangeX;
+    const newY = (Math.random() - 0.5) * rangeY;
     setNoButtonPos({ x: newX, y: newY });
   };
 
@@ -39,24 +51,24 @@ const Index = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-rose-50 via-white to-pink-50 overflow-hidden p-4">
       {/* Background Decorations */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {[...Array(20)].map((_, i) => (
+        {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 1000 }}
             animate={{ 
-              opacity: [0.1, 0.4, 0.1],
+              opacity: [0.1, 0.3, 0.1],
               y: -200,
-              x: Math.random() * window.innerWidth,
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
               rotate: 360
             }}
             transition={{ 
-              duration: Math.random() * 10 + 10, 
+              duration: Math.random() * 10 + 15, 
               repeat: Infinity,
               ease: "linear"
             }}
             className="absolute text-rose-200"
           >
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
           </motion.div>
@@ -72,34 +84,36 @@ const Index = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
               transition={{ duration: 0.5 }}
-              className="flex flex-col items-center"
+              className="flex flex-col items-center w-full"
             >
               <motion.h1 
-                className="text-3xl md:text-4xl font-serif text-rose-600 font-bold text-center mb-8"
+                className="text-2xl md:text-4xl font-serif text-rose-600 font-bold text-center mb-6 px-4"
               >
                 {isOpen ? "Une surprise pour toi..." : "Tu as reçu un message !"}
               </motion.h1>
 
-              <ValentineEnvelope 
-                isOpen={isOpen} 
-                isAccepted={false}
-                onOpen={() => setIsOpen(true)}
-              >
-                <ValentineCard isAccepted={false} />
-              </ValentineEnvelope>
+              <div className="w-full flex justify-center scale-90 sm:scale-100">
+                <ValentineEnvelope 
+                  isOpen={isOpen} 
+                  isAccepted={false}
+                  onOpen={() => setIsOpen(true)}
+                >
+                  <ValentineCard isAccepted={false} />
+                </ValentineEnvelope>
+              </div>
 
-              <div className="h-24 flex items-center justify-center mt-4">
+              <div className="min-h-[140px] flex items-center justify-center mt-2 w-full">
                 {isOpen && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-6"
+                    className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 w-full"
                   >
                     <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={handleAccept}
-                      className="bg-rose-500 text-white px-10 py-4 rounded-full font-bold shadow-xl text-lg z-50 hover:bg-rose-600 transition-colors"
+                      className="bg-rose-500 text-white px-12 py-4 rounded-full font-bold shadow-xl text-xl z-50 hover:bg-rose-600 transition-colors min-w-[160px]"
                     >
                       Oui ! ❤️
                     </motion.button>
@@ -107,7 +121,8 @@ const Index = () => {
                     <motion.button
                       animate={{ x: noButtonPos.x, y: noButtonPos.y }}
                       onMouseEnter={handleNoHover}
-                      className="bg-white text-rose-300 px-6 py-2 rounded-full font-semibold border border-rose-100 shadow-sm cursor-default text-sm"
+                      onTouchStart={handleNoHover}
+                      className="bg-white/80 backdrop-blur-sm text-rose-300 px-8 py-2 rounded-full font-semibold border border-rose-100 shadow-sm cursor-default text-base"
                     >
                       Non 💔
                     </motion.button>
@@ -121,12 +136,12 @@ const Index = () => {
               initial={{ opacity: 0, scale: 0.5, y: 50 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ type: "spring", damping: 12, stiffness: 100 }}
-              className="w-full flex flex-col items-center"
+              className="w-full flex flex-col items-center px-4"
             >
-              <h1 className="text-4xl md:text-5xl font-serif text-rose-600 font-bold text-center mb-8 drop-shadow-sm">
+              <h1 className="text-3xl md:text-5xl font-serif text-rose-600 font-bold text-center mb-6 drop-shadow-sm">
                 Merveilleux ! ❤️
               </h1>
-              <div className="w-full max-w-sm">
+              <div className="w-full max-w-[320px] sm:max-w-sm">
                 <ValentineCard isAccepted={true} />
               </div>
             </motion.div>
@@ -134,7 +149,7 @@ const Index = () => {
         </AnimatePresence>
       </main>
 
-      <div className="fixed bottom-2 w-full">
+      <div className="fixed bottom-4 w-full">
         <MadeWithRicardo />
       </div>
     </div>
